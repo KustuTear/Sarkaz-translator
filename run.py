@@ -5,7 +5,8 @@ import csv
 import re
 import time
 import requests
-from ranker import build_ranker, rerank, clean_punctuation
+from ranker import build_ranker, rerank, clean_punctuation, RankerConfig
+from lm import build_lm_scorer
 
 try:
     from decoder import decode_topn
@@ -123,7 +124,7 @@ def refresh_dict():
     terms = scrape()
     return build_dict(terms)
 
-def run_decoder(d, ranker):
+def run_decoder(d, ranker, lm_scorer=None):
     print('解码器就绪。输入 "update dic" 更新词典，输入 q 退出。\n')
     while True:
         s = input('请输入密文字母串: ').strip()
@@ -153,7 +154,7 @@ def run_decoder(d, ranker):
             print(f'\n  最佳解码: {clean_punctuation("".join(best))}')
             if _HAS_TOPN:
                 topn = decode_topn(s.lower(), d, n=5)
-                topn = rerank(topn, ranker)
+                topn = rerank(topn, ranker, lm_scorer=lm_scorer)
                 if len(topn) > 1:
                     print('\n  [候选分词]')
                     for rank, (sc, segments) in enumerate(topn, 1):
@@ -176,4 +177,9 @@ if __name__ == '__main__':
 
     ranker = build_ranker(ENDFIELD_FILE)
     print(f'[✓] 排名器已就绪。\n')
-    run_decoder(d, ranker)
+    lm_scorer = build_lm_scorer()
+    if lm_scorer is not None:
+        print('[✓] LM 评分器已就绪 (uer/gpt2-chinese-cluecorpussmall)。\n')
+    else:
+        print('[!] transformers/torch 未安装，仅使用 TF-IDF 排名。\n')
+    run_decoder(d, ranker, lm_scorer)

@@ -93,3 +93,39 @@ def test_rerank_preserves_tuple_structure():
     result = rerank(candidates, r)
     for orig_score, orig_segs in candidates:
         assert any(score == orig_score and segs == orig_segs for score, segs in result)
+
+
+from ranker import RankerConfig
+
+def test_rerank_config_defaults():
+    cfg = RankerConfig()
+    assert cfg.w1 == 0.6
+    assert cfg.w2 == 0.4
+    assert cfg.top_n_for_lm == 10
+
+def test_rerank_no_lm_backward_compatible():
+    path = _make_dict(['陈千语', '萨卡兹'])
+    r = build_ranker(path)
+    cand_a = (5, [('gds', ['陈千语'])])
+    cand_b = (8, [('xyz', ['无关词'])])
+    result_old = rerank([cand_b, cand_a], r)
+    result_new = rerank([cand_b, cand_a], r, lm_scorer=None)
+    assert result_old == result_new
+
+def test_rerank_with_mock_lm(monkeypatch):
+    import lm as lm_module
+    path = _make_dict(['陈千语', '萨卡兹'])
+    r = build_ranker(path)
+    # cand_a has low TF-IDF but high LM score; cand_b has high TF-IDF but low LM score
+    cand_a = (5, [('gds', ['陈千语'])])
+    cand_b = (8, [('xyz', ['无关词'])])
+
+    scores = {'陈千语': -1.0, '无关词': -10.0}
+    monkeypatch.setattr(lm_module, 'lm_score', lambda text, scorer: scores.get(text, -5.0))
+
+    class FakeScorer:
+        pass
+
+    result = rerank([cand_b, cand_a], r, lm_scorer=FakeScorer(), config=RankerConfig(w1=0.0, w2=1.0))
+    # With w1=0, only LM matters — 陈千语 (-1.0) should beat 无关词 (-10.0)
+    assert result[0][1] == cand_a[1]
