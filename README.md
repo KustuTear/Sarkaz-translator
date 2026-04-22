@@ -20,8 +20,6 @@ Because multiple characters share the same remainder, decoding is one-to-many â€
 
 ## Usage
 
-```bash
-python main.py
-```
+Double-click `Sarkaz.bat` to run.
 
 No dependencies beyond the Python standard library.
