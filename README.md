@@ -1,25 +1,25 @@
-# Sarkaz Translator
+# 萨卡兹文字转换器
 
-A cipher tool for the Sarkaz script in *Arknights: Endfield*.
+《明日方舟：终末地》萨卡兹文字的加解密工具。
 
-## Cipher
+## 功能说明
 
-**Encryption:** Fully functional. Converts Chinese text into Sarkaz letter strings using modular arithmetic.
+**加密：** 完全可用。将中文文本通过模运算转换为萨卡兹字母串。
 
-**Decryption:** Extremely limited. The decoder can only match a very small subset of in-game proper nouns (character names, place names, etc.). It is practically unable to translate full sentences.
+**解密：** 极度受限。解码器仅能匹配极少量游戏内专有词汇（角色名、地名等），基本无法翻译完整句子。
 
-## How It Works
+## 原理
 
-Each Chinese character is mapped to a letter via:
+每个汉字通过以下规则映射为一个字母：
 
 ```
-Letter = REMAINDER_MAP[ord(Chinese_Character) % 56]
+Letter = REMAINDER_MAP[ord(汉字) % 56]
 ```
 
-Because multiple characters share the same remainder, decoding is one-to-many — each letter maps back to a set of candidates, making full sentence recovery infeasible without a comprehensive game dictionary.
+由于多个汉字可能共享同一余数，解码是一对多的——每个字母对应一组候选汉字，在没有完整游戏词典的情况下，还原完整句子几乎不可行。
 
-## Usage
+## 使用方法
 
-Double-click `Sarkaz.bat` to run.
+双击 `Sarkaz.bat` 运行。
 
-No dependencies beyond the Python standard library.
+无需安装任何第三方依赖。
