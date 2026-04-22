@@ -1,14 +1,17 @@
 import json
 import requests
+from pathlib import Path
+
+ROOT = Path(__file__).parent.parent
+OUTPUT_FILE = str(ROOT / 'endfield_dict.txt')
 
 BASE = 'https://www.akedata.top'
-OUTPUT_FILE = 'endfield_dict.txt'
 
 MANIFESTS = [
-    '/public/CH/character/manifest.json',  # name field
-    '/public/CH/weapon/manifest.json',     # title field
-    '/public/CH/item/manifest.json',       # name field
-    '/public/CH/enemy/manifest.json',      # name field
+    '/public/CH/character/manifest.json',
+    '/public/CH/weapon/manifest.json',
+    '/public/CH/item/manifest.json',
+    '/public/CH/enemy/manifest.json',
 ]
 
 def fetch_json(path, session):

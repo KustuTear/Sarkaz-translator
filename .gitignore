@@ -1,5 +1,27 @@
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 .playwright-mcp/
 .claude/
+
+# data / generated
 cipher_dict.json
+endfield_dict.txt
+remainder_map.csv
+
+# logs
+*.log
+logs/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# env / IDE
+.env
+.venv/
+venv/
+.vscode/
+.idea/
